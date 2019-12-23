@@ -21,4 +21,4 @@ app.ws('/auth', function(ws, req) {
   console.log('socket', req.testing);
 });
  
-app.listen(3000);
+app.listen(443);
