@@ -1,24 +1,24 @@
-'use strict';
-
-const express = require('express');
-const { Server } = require('ws');
-
-const PORT = process.env.PORT || 3000;
-const INDEX = '/index.html';
-
-const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
-
-const wss = new Server({ server });
-
-wss.on('connection', (ws) => {
-  console.log('Client connected');
-  ws.on('close', () => console.log('Client disconnected'));
+var express = require('express');
+var app = express();
+var expressWs = require('express-ws')(app);
+ 
+app.use(function (req, res, next) {
+  console.log('middleware');
+  req.testing = 'testing';
+  return next();
 });
-
-setInterval(() => {
-  wss.clients.forEach((client) => {
-    client.send(new Date().toTimeString());
+ 
+app.get('/', function(req, res, next){
+  console.log('get route', req.testing);
+  res.end();
+});
+ 
+app.ws('/auth', function(ws, req) {
+  console.log(req.body)
+  ws.on('message', function(msg) {
+    console.log(msg);
   });
-}, 1000);
+  console.log('socket', req.testing);
+});
+ 
+app.listen(3000);
